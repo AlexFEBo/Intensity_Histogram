@@ -49,9 +49,14 @@ ui <- fluidPage(
                "Name for Y axis",
                value = "" ),
      
-      radioButtons("legend_position",
-                   "Legend position",
-                   list("right", "top", "bottom", "left", "none")),
+      selectInput("legend_position",
+                  "Choose the legend position",
+                  choices = c("Right", "Top", "Bottom", "Left", "None"),
+                  selected = "Right"),
+     
+      # radioButtons("legend_position",
+      #              "Legend position",
+      #              list("right", "top", "bottom", "left", "none")),
      
       textInput("legend_title",
                 "Legend Title",
@@ -84,6 +89,12 @@ server <- function(input, output) {
     # Variables for x and y ranges(UI)
     y_range  <- as.numeric(strsplit(input$y_axis,","))
     x_range  <- as.numeric(strsplit(input$x_axis,","))
+    legend_pos <- switch (input$legend_position,
+                       "Right" = "right",
+                       "Top" = "top",
+                       "Bottom" = "bottom",
+                       "Left" = "left",
+                       "None" = "none")
     
     # Draw the histogram with ggplot and using UI
     ggplot(df, 
@@ -91,14 +102,14 @@ server <- function(input, output) {
                fill=id)) +
       geom_histogram(binwidth = input$userbin) +
       labs(y=input$Y_axis, x =input$X_axis) +
-      theme(legend.position = input$legend_position) +
+      theme(legend.position = legend_pos) +
       scale_fill_discrete(name = input$legend_title,
                           labels = legendlab) +
       # Below are classic axis range (0 to maximal value from df)
       scale_y_continuous(expand = c(0, NA)) +
-      scale_x_continuous(expand = c(0, NA)) +
+      scale_x_continuous(expand = c(0, NA)) # +
       # ggplot theme
-      theme_light(base_size = 16)
+      # theme_light(base_size = 16)
     })
   }  
 
