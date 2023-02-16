@@ -6,59 +6,85 @@ library(here)
 
 
 
-# Define UI ----
+###### Define UI ######
 ui <- fluidPage(
+  
+  # Title
   titlePanel("Intensity Histogram"),
+  
+  # Sidebar buttons
   sidebarLayout(
     sidebarPanel(
      
     # Change scale box + conditional panels for changing scale
-      
      checkboxInput(inputId = "set_scale",
                     label = "Set scale",
                     value = FALSE),
+     
      conditionalPanel(
        condition = 'input.set_scale == true',
        textInput("x_axis", "X scale (min, max)", value = "")
      ),
+     
      conditionalPanel(
        condition = 'input.set_scale == true',
        textInput("y_axis", "Y scale (min, max)", value = "")
      ),
      
-     # Buttons for Binwidth, Axis names, Legend position, Conditions
-      sliderInput("userbin", label = "Binwidth:",
-                  min = 1, max = 200, value = 5, step = 1),
-      textInput("X_axis", "Name for X axis", value = "" ),
-      textInput("Y_axis", "Name for Y axis", value = "" ),
-      radioButtons("legend_position", "Legend position",
+     # Buttons for Binwidth, Axis names, Legend position, Legend title, Legend
+     # conditions
+     
+      sliderInput("userbin",
+                  label = "Binwidth:",
+                  min = 1,
+                  max = 200,
+                  value = 5,
+                  step = 1),
+      
+      textInput("X_axis", 
+               "Name for X axis", 
+               value = "" ),
+     
+      textInput("Y_axis",
+               "Name for Y axis",
+               value = "" ),
+     
+      radioButtons("legend_position",
+                   "Legend position",
                    list("right", "top", "bottom", "left", "none")),
-      textInput("legend_title", "Legend Title", value = "" ),
-      textInput("legend_labels", "Conditions", value = "" )
+     
+      textInput("legend_title",
+                "Legend Title",
+                value = "" ),
+     
+      textInput("legend_labels",
+                "Conditions (condition1, condition2",
+                value = "" )
     ),
     
     
+    # Show the plot
     mainPanel(
-      plotOutput("plot")
+      plotOutput("histPlot")
     )
   )
 )
 
-# Define server logic ----
+###### Define server logic ######
 
 server <- function(input, output) {
   
-  output$plot <- renderPlot({ 
-    
+  output$histPlot <- renderPlot({ 
+  # Creates variables corresponding to user input (UI)
+    # Variable for condition (UI)
     legendlab <- unlist(strsplit(input$legend_labels,",")) 
-    df <- read.csv("df.csv")
-    # Create a new variable
-    # Define variable that takes the values fo x and y axis defined above
-    y_range <- as.numeric(strsplit(input$y_axis,","))
+    # Variables for x and y ranges(UI)
+    y_range  <- as.numeric(strsplit(input$y_axis,","))
+    x_range  <- as.numeric(strsplit(input$x_axis,","))
+    # Example dataframe
+    df        <- read.csv("df.csv")
+    
 
-    
-## Need to add conitional scale setting (panel defined above)    
-    
     p <- ggplot(df, 
                 aes(x=Value, fill=id)) +
       geom_histogram(binwidth = input$userbin) +
@@ -69,11 +95,6 @@ server <- function(input, output) {
       scale_y_continuous(expand = c(0, NA)) +
       scale_x_continuous(expand = c(0, NA)) 
       # Test using xlim(min, max) for defining the scale (add if statement as well)
-    if (input$x_axis != "" && input$set_scale == TRUE) {
-      x_range <- as.numeric(strsplit(input$x_axis,","))
-      
-    }
-      observe({print(x_range)})
     
     print(p)
 })
