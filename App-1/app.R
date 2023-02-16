@@ -70,6 +70,9 @@ ui <- fluidPage(
   )
 )
 
+# Example dataframe
+df        <- read.csv("df.csv")
+
 ###### Define server logic ######
 
 server <- function(input, output) {
@@ -81,25 +84,24 @@ server <- function(input, output) {
     # Variables for x and y ranges(UI)
     y_range  <- as.numeric(strsplit(input$y_axis,","))
     x_range  <- as.numeric(strsplit(input$x_axis,","))
-    # Example dataframe
-    df        <- read.csv("df.csv")
     
-
-    p <- ggplot(df, 
-                aes(x=Value, fill=id)) +
+    # Draw the histogram with ggplot and using UI
+    ggplot(df, 
+           aes(x=Value, 
+               fill=id)) +
       geom_histogram(binwidth = input$userbin) +
       labs(y=input$Y_axis, x =input$X_axis) +
-      theme_light(base_size = 16) +
       theme(legend.position = input$legend_position) +
-      scale_fill_discrete(name = input$legend_title, labels = legendlab) +
+      scale_fill_discrete(name = input$legend_title,
+                          labels = legendlab) +
+      # Below are classic axis range (0 to maximal value from df)
       scale_y_continuous(expand = c(0, NA)) +
-      scale_x_continuous(expand = c(0, NA)) 
-      # Test using xlim(min, max) for defining the scale (add if statement as well)
-    
-    print(p)
-})
+      scale_x_continuous(expand = c(0, NA)) +
+      # ggplot theme
+      theme_light(base_size = 16)
+    })
+  }  
 
-}  
+######  Run the app ######
 
-# Run the app ----
 shinyApp(ui = ui, server = server)
