@@ -87,8 +87,8 @@ server <- function(input, output) {
     # Variable for condition (UI)
     legendlab <- unlist(strsplit(input$legend_labels,",")) 
     # Variables for x and y ranges(UI)
-    y_range  <- as.numeric(strsplit(input$y_axis,","))
-    x_range  <- as.numeric(strsplit(input$x_axis,","))
+    y_range  <- as.numeric(unlist(strsplit(input$y_axis,",")))
+    x_range  <- as.numeric(unlist(strsplit(input$x_axis,",")))
     legend_pos <- switch (input$legend_position,
                        "Right" = "right",
                        "Top" = "top",
@@ -107,9 +107,7 @@ server <- function(input, output) {
                           labels = legendlab) +
       # Below are classic axis range (0 to maximal value from df)
       scale_y_continuous(expand = c(0, NA)) +
-      scale_x_continuous(expand = c(0, NA)) # +
-      # ggplot theme
-      # theme_light(base_size = 16)
+      scale_x_continuous(expand = c(0, NA)) 
     })
   }  
 

@@ -4,8 +4,8 @@ ShinyApp allowing to plot Intensity Histogram.
 
 ## Purpose:
 
-Automatic plotting of intensity histograms.
-Main characteristics of the plot are controlled by user. 
+Automatic plotting of intensity histograms.  
+The main characteristics of the plot shold be controlled by the user.   
 
 ## Shiny App tutorial:
 https://shiny.rstudio.com/tutorial/
