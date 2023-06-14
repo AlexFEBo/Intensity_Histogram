@@ -1,0 +1,123 @@
+---
+title: "Intensity_histogram"
+author: "A Bokhobza"
+date: "2023-01-24"
+output: html_document
+runtime: shiny
+---
+
+**Aim**: Plot histogram intensity from imaging experiment  \
+**Contact**: [alexandre.bokhobza\@gmail.com](mailto:alexandre.bokhobza@gmail.com){.email}
+
+------------------------------------------------------------------------
+
+
+```{r echo = FALSE, include=FALSE, results='hide'}
+# Packages names
+packages <- c("tidyverse","here","shiny","fs","plotly")
+
+#Install missing packages
+
+installed_packages <- packages %in% rownames(installed.packages())
+if (any(installed_packages == FALSE)) {
+  installed.packages(packages [!installed_packages])
+}
+
+# Packages loading
+invisible(lapply(packages, library, character.only = TRUE))
+
+# Delete variables
+
+rm(installed_packages, packages)
+
+# code from: https://statsandr.com/blog/an-efficient-way-to-install-and-load-r-packages/
+
+```
+
+
+```{r echo=FALSE, results='hide'}
+
+here::i_am("Intensity_Histogram.Rproj")
+
+
+```
+
+
+```{r echo = FALSE, results='hide'}
+
+xfun::session_info()
+
+```
+
+
+# Plot the histogram
+
+
+```{r echo = FALSE, results='hide'}
+
+data_path <- paste(here("data", "raw_data"), list.files(here("data", "raw_data")), sep = "/")
+
+df_input <- map(data_path, readxl::read_excel)
+
+names(df_input) <- str_replace(list.files(here("data", "raw_data")), pattern = ".xlsx", replacement = "")
+
+df <- bind_rows(df_input, .id = 'id')
+
+# Cleaning
+rm(data_path, df_input)
+
+```
+
+
+## Select the desired binwidth
+```{r echo = FALSE}
+# Shiny widget
+
+sliderInput("userbin", label = "Binwidth:",
+            min = 1, max = 200, value = 5, step = 1)
+textInput("X_axis", "Name for X axis", value = "" )
+textInput("Y_axis", "Name for Y axis", value = "" )
+radioButtons("legend_position", "Legend position",
+                   list("right", "top", "bottom", "left", "none"))
+textInput("legend_title", "Legend Title", value = "" )
+textInput("legend_labels", "Conditions", value = "" )
+
+
+
+#checkboxInput("hide_legend", "Hide legend", value = FALSE)
+
+
+
+```
+
+
+```{r echo = FALSE}
+
+
+renderPlot({ 
+  
+legendlab <- unlist(strsplit(input$legend_labels,",")) 
+
+p <- ggplot(df, 
+         aes(x=Value, fill=id)) +
+    geom_histogram(binwidth = input$userbin) +
+    labs(y=input$Y_axis, x =input$X_axis) +
+    theme(legend.position = input$legend_position) +
+  scale_fill_discrete(name = input$legend_title, labels = legendlab) +
+  scale_y_continuous(expand = c(0, NA)) +
+  scale_x_continuous(expand = c(0, NA)) +
+  theme_light(base_size = 16)
+  
+  
+#   if (input$hide_legend == TRUE) {
+#  p <- p + theme(legend.position = "none")
+#}
+  
+  print(p)
+  
+  })
+
+
+
+```
+

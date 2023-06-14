@@ -1,0 +1,87 @@
+---
+title: "Intensity_histogram"
+author: "A Bokhobza"
+date: "2023-01-24"
+output: html_document
+runtime: shiny
+---
+
+**Aim**: Plot histogram intensity from imagong experiment **Contact**: [alexandre.bokhobza\@gmail.com](mailto:alexandre.bokhobza@gmail.com){.email}
+
+------------------------------------------------------------------------
+
+
+```{r echo = FALSE, include=FALSE, results='hide'}
+# Packages names
+packages <- c("tidyverse","here","shiny","fs","plotly")
+
+#Install missing packages
+
+installed_packages <- packages %in% rownames(installed.packages())
+if (any(installed_packages == FALSE)) {
+  installed.packages(packages [!installed_packages])
+}
+
+# Packages loading
+invisible(lapply(packages, library, character.only = TRUE))
+
+# Delete variables
+
+rm(installed_packages, packages)
+
+# code from: https://statsandr.com/blog/an-efficient-way-to-install-and-load-r-packages/
+
+```
+
+
+```{r echo=FALSE, results='hide'}
+
+here::i_am("Intensity_Histogram.Rproj")
+
+
+```
+
+
+```{r echo = FALSE, results='hide'}
+
+xfun::session_info()
+
+```
+
+
+# Plot the histogram
+
+
+```{r echo = FALSE, results='hide'}
+
+data_path <- paste(here("data", "raw_data"), list.files(here("data", "raw_data")), sep = "/")
+
+df_input <- map(data_path, readxl::read_excel)
+
+names(df_input) <- str_replace(list.files(here("data", "raw_data")), pattern = ".xlsx", replacement = "")
+
+df <- bind_rows(df_input, .id = 'id')
+
+# Cleaning
+rm(data_path, df_input)
+
+```
+
+
+## Select the desired binwidth
+```{r echo = FALSE}
+# Shiny widget
+
+sliderInput("userbin", label = "Binwidth:",
+            min = 1, max = 200, value = 5, step = 1)
+
+```
+
+
+```{r echo = FALSE}
+
+renderPlot({ggplot(df, aes(x=Value, fill=id)) + geom_histogram(binwidth = input$userbin)})
+
+
+```
+

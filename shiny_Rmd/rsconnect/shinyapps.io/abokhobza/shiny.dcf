@@ -1,0 +1,11 @@
+name: shiny
+title:
+username:
+account: abokhobza
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 8215679
+bundleId: 6806568
+url: https://abokhobza.shinyapps.io/shiny/
+when: 1675435381.95949
+lastSyncTime: 1675435381.9595

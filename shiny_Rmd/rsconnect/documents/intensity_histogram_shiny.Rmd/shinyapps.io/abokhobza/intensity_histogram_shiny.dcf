@@ -1,0 +1,11 @@
+name: intensity_histogram_shiny
+title:
+username:
+account: abokhobza
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 8215705
+bundleId: 6806582
+url: https://abokhobza.shinyapps.io/intensity_histogram_shiny/
+when: 1675435499.45764
+lastSyncTime: 1675435499.45765
